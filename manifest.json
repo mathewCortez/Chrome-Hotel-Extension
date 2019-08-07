@@ -9,7 +9,6 @@
             "matches": [
                 "https://www.google.com/travel/hotels/*",  "http://www.google.com/travel/hotels/*"
             ],
-          "run_at": "document_end",
             "js": ["jquery-3.4.1.min.js","jquery-ui.min.js","content.js"],
           "css": ["jquery-ui.min.css"]
         }

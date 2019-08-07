@@ -1,64 +1,74 @@
-// content.js
-chrome.runtime.onMessage.addListener(
-  function(request, sender, sendResponse) {
-    if( request.message === "clicked_browser_action" ) {
-      var firstHref = $("a[href^='http']").eq(0).attr("href");
-
-      console.log(firstHref);
-
-      // This line is new!
-      chrome.runtime.sendMessage({"message": "open_new_tab", "url": firstHref});
-    }
-  }
-);
 wTaxAndFees = [];
-function getPriceWithTaxAndFees() {
-  //var list = document.getElementsByClassName("MnBECc");
-  var list  = $("span.MnBECc");
-  for (let item of list) {
-    console.log(item);
-    if (item.textContent.includes("$")) {
-      x = item.textContent.split(" ");
-      //x[0] will be the price
-      x = parseInt(x[0].substring(1));
-      wTaxAndFees.push(x);
-      //item.replaceWith("");
-    }
-  }
-}
 basePrice = [];
-counter = 0;
-function getPriceWithoutTaxAndFees() {
-  var list = document.getElementsByClassName("wqcQP");
-  for(let item of list) {
-    if(item.textContent.includes("$")) {
-      x = item.textContent.split(" ");
-      if(x.length == 1) {
-        //x[0] will be the price 
-        x = parseInt(x[0].substring(1));
-        basePrice.push(x);
-        item.replaceWith("$"+wTaxAndFees[counter]);
-        counter++;
-      } else {
-        //x[2].slice(0,-1) will be the price
-          x = parseInt(x[2].substring(1));
-          basePrice.push(x);
-          $(".iKUFxe").replaceWith("Book for $" + wTaxAndFees[counter]);
-          counter++;
-      }
-    }
-  }
-}
-function setLowest() {
-  realLowestPrice = Math.min(...wTaxAndFees);
-  $("div.PQl5I>div>c-wiz>div>div")[0].innerHTML = "$"+realLowestPrice;
-//  console.log(realLowestPrice);
-//  console.log( $("div.PQl5I>div>c-wiz>div>div"));
-}
-getPriceWithTaxAndFees();
-getPriceWithoutTaxAndFees();
-setLowest();
-console.log(wTaxAndFees);
-console.log(basePrice);
-//$("div.PQl5I>div>c-wiz>div>div").childNodes[0].replaceWith(realLowestPrice);
 
+function setLowest() {
+	realLowestPrice = Math.min(...wTaxAndFees);
+	$("div.PQl5I>div>c-wiz>div>div")[0].innerHTML = "$" + realLowestPrice;
+	$("div.TKHEpb>section>div:nth-child(2)>c-wiz>div:nth-child(4)>div>button").textContent = "View more prices from $";
+	$("div.ct-active>div").textContent = "View more prices from $";
+	$("span.ct-active").textContnent = "View more prices from $";
+	$("button.ct-active").textContent = "View more prices from $";
+	$("div.TKHEpb>section>div:nth-child(2)>c-wiz>div:nth-child(4)>div>button").innerText = "View more prices from $";
+	$("div.ct-active>div").innerText = "View more prices from $";
+	$("span.ct-active").innerText = "View more prices from $";
+	$("button.ct-active").innerText = "View more prices from $";
+	$("div.TKHEpb>section>div:nth-child(2)>c-wiz>div:nth-child(4)>div>button").outerText = "View more prices from $";
+	$("div.ct-active>div").outerText = "View more prices from $";
+	$("span.ct-active").outerText = "View more prices from $";
+	$("button.ct-active").outerText = "View more prices from $";
+	try {
+		
+	} catch {
+			console.log("problem with expand");
+		}
+}
+
+function getPriceAndSet() {
+	var websitePrice = $("div.Tubrbd");
+	for (let item of websitePrice) {
+		var realPrice = 0;
+		//var taxSubtext = $("item>span>span.MnBECc");
+		var taxSubtext = $("span.MnBECc", item);
+		var taxSubtextAlt = $("");
+		var wrongPrices = document.getElementsByClassName("wqcQP");
+		//var wrongPricesAlt = $("item>div>span>span.wqcQP");
+		var wrongPricesAlt = $("span.wqcQP", item)[0];
+		for (let ital of taxSubtext) {
+			if (ital.textContent.includes("$")) {
+				x = ital.textContent.split(" ");
+				//x[0] will be the price
+				x = x[0].replace(/,/g, "");
+				realPrice = parseInt(x.substring(1));
+				wTaxAndFees.push(realPrice);
+				//item.replaceWith("");
+			}
+		}
+		try{
+		if (wrongPricesAlt.textContent.includes("$")) {
+			x = wrongPricesAlt.textContent.split(" ");
+			if (x.length == 1) {
+				//x[0] will be the price 
+				x = x[0].replace(/,/g, "");
+				x = x.substring(1);
+				x = parseInt(x);
+				basePrice.push(x);
+				wrongPricesAlt.replaceWith("$" + realPrice);
+			} else {
+				//x[2].slice(0,-1) will be the price
+				x = x[2].replace(/,/g, "");
+				x = parseInt(x.substring(1));
+				basePrice.push(x);
+				$(".iKUFxe").replaceWith("Book for $" + realPrice);
+			}
+		}
+		}
+		catch {
+			console.log("No price for one item");
+			}
+	}
+}
+
+setTimeout(function () {
+	getPriceAndSet()
+	setLowest()
+}, 9000)
